@@ -32,7 +32,7 @@ Aplikasi web untuk auto-generate dan sinkronisasi subtitle dari video menggunaka
 
 ### 1. Clone Repository
 ```bash
-git clone <https://github.com/RifqiArdian09/Generator-Subtitle-Video.git>
+git clone https://github.com/RifqiArdian09/Generator-Subtitle-Video.git
 cd Generator-Subtitle-Video
 ```
 
