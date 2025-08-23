@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Subtitle Video - Auto Subtitle Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <i class="fas fa-closed-captioning header-icon"></i>
+                <h1>Generator Subtitle Video</h1>
+                <p>Auto-generate dan sinkronisasi subtitle untuk video Anda</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section" id="uploadSection">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h3>Upload Video Anda</h3>
+                        <p>Drag & drop video atau klik untuk memilih file</p>
+                        <p class="file-info">Mendukung: MP4, AVI, MOV, MKV, WMV (Max: 500MB)</p>
+                        <input type="file" id="videoInput" accept=".mp4,.avi,.mov,.mkv,.wmv" hidden>
+                        <button class="upload-btn" id="uploadBtn">
+                            <i class="fas fa-folder-open"></i>
+                            Pilih Video
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="selected-file" id="selectedFile" style="display: none;">
+                    <div class="file-preview">
+                        <i class="fas fa-video file-icon"></i>
+                        <div class="file-details">
+                            <span class="file-name" id="fileName"></span>
+                            <span class="file-size" id="fileSize"></span>
+                        </div>
+                        <button class="remove-file" id="removeFile">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <button class="process-btn" id="processBtn">
+                        <i class="fas fa-magic"></i>
+                        Generate Subtitle
+                    </button>
+                </div>
+            </section>
+
+            <!-- Processing Section -->
+            <section class="processing-section" id="processingSection" style="display: none;">
+                <div class="processing-card">
+                    <div class="processing-header">
+                        <i class="fas fa-cogs processing-icon"></i>
+                        <h3>Memproses Video...</h3>
+                        <p id="processingStatus">Mengekstrak audio dari video</p>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span class="progress-text" id="progressText">0%</span>
+                    </div>
+                    
+                    <div class="processing-steps">
+                        <div class="step" id="step1">
+                            <i class="fas fa-music step-icon"></i>
+                            <span>Ekstrak Audio</span>
+                        </div>
+                        <div class="step" id="step2">
+                            <i class="fas fa-microphone step-icon"></i>
+                            <span>Analisis Suara</span>
+                        </div>
+                        <div class="step" id="step3">
+                            <i class="fas fa-closed-captioning step-icon"></i>
+                            <span>Generate Subtitle</span>
+                        </div>
+                        <div class="step" id="step4">
+                            <i class="fas fa-sync step-icon"></i>
+                            <span>Sinkronisasi</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    <i class="fas fa-check-circle success-icon"></i>
+                    <h3>Subtitle Berhasil Dibuat!</h3>
+                    <p>Preview dan download subtitle Anda</p>
+                </div>
+
+                <div class="results-content">
+                    <!-- Preview Panel -->
+                    <div class="preview-panel">
+                        <h4><i class="fas fa-eye"></i> Preview Subtitle</h4>
+                        <div class="subtitle-preview" id="subtitlePreview">
+                            <!-- Subtitles will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Download Panel -->
+                    <div class="download-panel">
+                        <h4><i class="fas fa-download"></i> Download Subtitle</h4>
+                        <div class="download-options">
+                            <button class="download-btn srt-btn" id="downloadSRT">
+                                <i class="fas fa-file-alt"></i>
+                                Download SRT
+                                <span class="format-info">Format standar untuk video player</span>
+                            </button>
+                            <button class="download-btn vtt-btn" id="downloadVTT">
+                                <i class="fas fa-file-code"></i>
+                                Download VTT
+                                <span class="format-info">Format untuk web browser</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-actions">
+                    <button class="secondary-btn" id="processAnother">
+                        <i class="fas fa-plus"></i>
+                        Proses Video Lain
+                    </button>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section class="error-section" id="errorSection" style="display: none;">
+                <div class="error-card">
+                    <i class="fas fa-exclamation-triangle error-icon"></i>
+                    <h3>Terjadi Kesalahan</h3>
+                    <p id="errorMessage">Gagal memproses video</p>
+                    <button class="retry-btn" id="retryBtn">
+                        <i class="fas fa-redo"></i>
+                        Coba Lagi
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Generator Subtitle Video. Dibuat dengan ❤️ menggunakan Python & AI</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Memuat...</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
