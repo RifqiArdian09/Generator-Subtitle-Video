@@ -32,8 +32,8 @@ Aplikasi web untuk auto-generate dan sinkronisasi subtitle dari video menggunaka
 
 ### 1. Clone Repository
 ```bash
-git clone <repository-url>
-cd real
+git clone <https://github.com/RifqiArdian09/Generator-Subtitle-Video.git>
+cd Generator-Subtitle-Video
 ```
 
 ### 2. Install FFmpeg
@@ -209,5 +209,5 @@ pip install openai-whisper
 4. **Format Output**: Gunakan SRT untuk kompatibilitas maksimal
 
 
-**Dibuat dengan ❤️ menggunakan Python, Flask, dan AI Technology**
-# Generator-Subtitle-Video
+
+
