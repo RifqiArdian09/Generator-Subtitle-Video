@@ -2,11 +2,8 @@
   "version": 2,
   "builds": [
     {
-      "src": "subtitle_generator.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
+      "src": "api/index.py",
+      "use": "@vercel/python"
     },
     {
       "src": "static/**",
@@ -16,7 +13,12 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/subtitle_generator.py"
+      "dest": "/api/index.py"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "PYTHON_VERSION": "3.9"
+    }
+  }
 }
