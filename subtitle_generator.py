@@ -12,9 +12,9 @@ import whisper
 import threading
 import time
 
-app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB max file size
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app = Flask(__name__, static_folder='static', template_folder='templates')
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max file size (Vercel limit)
+app.config['UPLOAD_FOLDER'] = '/tmp/uploads'  # Using /tmp for Vercel serverless functions
 
 # Create upload directory if it doesn't exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -314,4 +314,6 @@ def preview_subtitles(task_id):
 if __name__ == '__main__':
     print("Starting Subtitle Generator Server...")
     print("Access the application at: http://localhost:5000")
+    # Create upload directory if it doesn't exist
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     app.run(debug=True, host='0.0.0.0', port=5000)
