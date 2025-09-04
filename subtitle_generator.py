@@ -18,8 +18,6 @@ app.config['UPLOAD_FOLDER'] = '/tmp/uploads'  # Using /tmp for Vercel serverless
 
 # Create upload directory if it doesn't exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-os.makedirs('static', exist_ok=True)
-os.makedirs('templates', exist_ok=True)
 
 class SubtitleGenerator:
     def __init__(self):
@@ -31,7 +29,8 @@ class SubtitleGenerator:
         """Load Whisper model for better accuracy"""
         try:
             if self.whisper_model is None:
-                self.whisper_model = whisper.load_model("base")
+                # Use smaller model for Vercel compatibility
+                self.whisper_model = whisper.load_model("tiny")
             return True
         except Exception as e:
             print(f"Failed to load Whisper model: {e}")
@@ -41,7 +40,7 @@ class SubtitleGenerator:
         """Extract audio from video file"""
         try:
             video = mp.VideoFileClip(video_path)
-            audio_path = video_path.replace('.mp4', '_audio.wav').replace('.avi', '_audio.wav').replace('.mov', '_audio.wav')
+            audio_path = video_path + '_audio.wav'
             video.audio.write_audiofile(audio_path, verbose=False, logger=None)
             video.close()
             return audio_path
@@ -111,7 +110,7 @@ class SubtitleGenerator:
                 end_time = current_time + chunk_duration
                 
                 # Export chunk to temporary file
-                chunk_filename = f"temp_chunk_{i}.wav"
+                chunk_filename = f"/tmp/temp_chunk_{i}.wav"
                 chunk.export(chunk_filename, format="wav")
                 
                 try:
@@ -246,9 +245,11 @@ def upload_video():
                 # Store results
                 subtitle_gen.processing_status[task_id]["subtitles"] = subtitles
                 
-                # Clean up audio file
+                # Clean up files
                 if os.path.exists(audio_path):
                     os.remove(audio_path)
+                if os.path.exists(filepath):
+                    os.remove(filepath)
                     
             except Exception as e:
                 subtitle_gen.processing_status[task_id] = {"status": "error", "error": str(e)}
@@ -281,17 +282,15 @@ def export_subtitles(task_id, format):
         subtitles = status["subtitles"]
         
         if format == 'srt':
-            filename = f"subtitles_{task_id}.srt"
-            filepath = os.path.join('static', filename)
-            subtitle_gen.export_srt(subtitles, filepath)
+            filename = f"/tmp/subtitles_{task_id}.srt"
+            filepath = subtitle_gen.export_srt(subtitles, filename)
+            return send_file(filepath, as_attachment=True, download_name=f"subtitles_{task_id}.srt")
         elif format == 'vtt':
-            filename = f"subtitles_{task_id}.vtt"
-            filepath = os.path.join('static', filename)
-            subtitle_gen.export_vtt(subtitles, filepath)
+            filename = f"/tmp/subtitles_{task_id}.vtt"
+            filepath = subtitle_gen.export_vtt(subtitles, filename)
+            return send_file(filepath, as_attachment=True, download_name=f"subtitles_{task_id}.vtt")
         else:
             return jsonify({'error': 'Unsupported format'}), 400
-        
-        return send_file(filepath, as_attachment=True, download_name=filename)
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -311,9 +310,8 @@ def preview_subtitles(task_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# This is needed for Vercel
 if __name__ == '__main__':
-    print("Starting Subtitle Generator Server...")
-    print("Access the application at: http://localhost:5000")
     # Create upload directory if it doesn't exist
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     app.run(debug=True, host='0.0.0.0', port=5000)

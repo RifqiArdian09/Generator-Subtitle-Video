@@ -28,3 +28,8 @@ env/
 # Ignore environment files
 .env
 *.env
+
+# Ignore any large model files
+*.pt
+*.pth
+*.bin
